@@ -36,32 +36,13 @@ jobs:
       - name: Install dependencies
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          sudo apt-get update
-          sudo apt-get install -qq crossbuild-essential-arm64 crossbuild-essential-armhf
           sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
           sudo apt-get install -y musl
           rustup target add aarch64-unknown-linux-gnu
-
-      - name: Add Linux targets configurations
-        run: |
-                  cat >>~/.cargo/config <<EOF
-                  [target.aarch64-unknown-linux-gnu]
-                  linker = "aarch64-linux-gnu-gcc"
-                  [target.aarch64-unknown-linux-musl]
-                  linker = "aarch64-linux-gnu-gcc"
-                  [target.armv7-unknown-linux-gnueabihf]
-                  linker = "arm-linux-gnueabihf-gcc"
-                  [target.armv7-unknown-linux-musleabihf]
-                  linker = "arm-linux-gnueabihf-gcc"
-                  [target.arm-unknown-linux-gnueabihf]
-                  linker = "arm-linux-gnueabihf-gcc"
-                  [target.arm-unknown-linux-musleabihf]
-                  linker = "arm-linux-gnueabihf-gcc"
-                  EOF
                   
       - name: Build
         run: |
-          cargo build --release --locked --target ${{ matrix.target }}
+          RUSTFLAGS="-C linker=aarch64-linux-gnu-gcc" cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
