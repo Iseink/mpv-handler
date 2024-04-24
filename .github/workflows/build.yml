@@ -20,7 +20,7 @@ jobs:
           - os: ubuntu-latest
             artifact_name: mpv-handler
             asset_name: linux-arm64
-            target: aarch64-unknown-linux-gnu
+            target: aarch64-unknown-linux-musl
 
           - os: windows-latest
             artifact_name: mpv-handler.exe
@@ -34,15 +34,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        if: matrix.target == 'aarch64-unknown-linux-musl'
         run: |
-          sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          sudo apt-get install crossbuild-essential-arm64 crossbuild-essential-armhf 
           sudo apt-get install -y musl
-          rustup target add aarch64-unknown-linux-gnu
+          rustup target add aarch64-unknown-linux-musl
                   
       - name: Build
         run: |
-          RUSTFLAGS="-C linker=aarch64-linux-gnu-gcc" cargo build --release --locked --target ${{ matrix.target }}
+          RUSTFLAGS="-C linker=aarch64-linux-musl-gcc" cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Upload to artifact
         uses: actions/upload-artifact@v4
