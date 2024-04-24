@@ -13,7 +13,7 @@ env:
 jobs:
   build:
     name: Build for ${{ matrix.os}}
-    runs-on: ${{ matrix.os }}
+    runs-on: [self-hosted, linux, ARM64]
     strategy:
       matrix:
         include:
